@@ -1,25 +1,25 @@
 // ===== STUDENT DATABASE =====
 const students = {
     "GRADE 4-BONIFACIO": [
-        { id: "G4B001", name: "Alice Johnson", gender: "FEMALE" },
-        { id: "G4B002", name: "Bob Smith", gender: "MALE" },
-        { id: "G4B003", name: "Carina Santos", gender: "FEMALE" },
-        { id: "G4B004", name: "Daniel Reyes", gender: "MALE" },
-        { id: "G4B005", name: "Emily Cruz", gender: "FEMALE" },
+        { id: "G4B001", name: "Alice Johnson", gender: "Male" },
+        { id: "G4B002", name: "Bob Smith", gender: "Male" },
+        { id: "G4B003", name: "Carina Santos", gender: "Female" },
+        { id: "G4B004", name: "Daniel Reyes", gender: "Male" },
+        { id: "G4B005", name: "Emily Cruz", gender: "Female" },
     ],
     "GRADE 5-LUNA": [
-        { id: "G5L001", name: "Francisco Luna", gender: "MALE" },
-        { id: "G5L002", name: "Grace Maria", gender: "FEMALE" },
-        { id: "G5L003", name: "Henry Gonzales", gender: "MALE" },
-        { id: "G5L004", name: "Iris Mendoza", gender: "FEMALE" },
-        { id: "G5L005", name: "Juan Dela Cruz", gender: "MALE" },
+        { id: "G5L001", name: "Francisco Luna", gender: "Male" },
+        { id: "G5L002", name: "Grace Maria", gender: "Female" },
+        { id: "G5L003", name: "Henry Gonzales", gender: "Male" },
+        { id: "G5L004", name: "Iris Mendoza", gender: "Female" },
+        { id: "G5L005", name: "Juan Dela Cruz", gender: "Male" },
     ],
     "GRADE 6-RIZAL": [
-        { id: "G6R001", name: "Karen Hernandez", gender: "FEMALE" },
-        { id: "G6R002", name: "Leo Villanueva", gender: "MALE" },
-        { id: "G6R003", name: "Maria Santos", gender: "FEMALE" },
-        { id: "G6R004", name: "Nathan Garcia", gender: "MALE" },
-        { id: "G6R005", name: "Olivia Perez", gender: "FEMALE" },
+        { id: "G6R001", name: "Karen Hernandez", gender: "Female" },
+        { id: "G6R002", name: "Leo Villanueva", gender: "Male" },
+        { id: "G6R003", name: "Maria Santos", gender: "Female" },
+        { id: "G6R004", name: "Nathan Garcia", gender: "Male" },
+        { id: "G6R005", name: "Olivia Perez", gender: "Female" },
     ]
 };
 
@@ -450,6 +450,147 @@ function generateQRCode() {
     });
     
     showMessage(`QR Code generated for ${section} - ${subject}`, 'success', 'scannerMessage');
+}
+
+// ===== BULK UPLOAD FUNCTIONS =====
+function handleBulkUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const fileName = file.name;
+    document.getElementById('fileName').textContent = `Selected: ${fileName}`;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let data = [];
+            
+            // Check if it's Excel or CSV
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                // Parse Excel
+                const workbook = XLSX.read(e.target.result, { type: 'binary' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                data = XLSX.utils.sheet_to_json(sheet);
+            } else {
+                // Parse CSV
+                const csvText = e.target.result;
+                data = parseCSV(csvText);
+            }
+            
+            // Validate and process data
+            processBulkStudents(data);
+        } catch (error) {
+            showBulkMessage(`Error: ${error.message}`, 'error');
+        }
+    };
+    
+    if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        reader.readAsBinaryString(file);
+    } else {
+        reader.readAsText(file);
+    }
+}
+
+function parseCSV(text) {
+    const rows = text.trim().split('\n');
+    const headers = rows[0].split(',').map(h => h.trim().toLowerCase());
+    const data = [];
+    
+    for (let i = 1; i < rows.length; i++) {
+        if (!rows[i].trim()) continue;
+        
+        const values = rows[i].split(',').map(v => v.trim());
+        const row = {};
+        
+        headers.forEach((header, index) => {
+            row[header] = values[index] || '';
+        });
+        
+        data.push(row);
+    }
+    
+    return data;
+}
+
+function processBulkStudents(data) {
+    let addedCount = 0;
+    let errorCount = 0;
+    const errors = [];
+    
+    data.forEach((row, index) => {
+        try {
+            // Get values from different possible column names
+            const name = row.name || row.Name || row.student_name || row['Student Name'] || '';
+            const gender = row.gender || row.Gender || '';
+            const section = row.section || row.Section || '';
+            
+            // Validate
+            if (!name || !gender || !section) {
+                errors.push(`Row ${index + 2}: Missing Name, Gender, or Section`);
+                errorCount++;
+                return;
+            }
+            
+            // Check if section exists
+            if (!students[section]) {
+                errors.push(`Row ${index + 2}: Invalid section "${section}"`);
+                errorCount++;
+                return;
+            }
+            
+            // Normalize gender
+            const normalizedGender = gender.toLowerCase() === 'male' ? 'Male' : 
+                                    gender.toLowerCase() === 'female' ? 'Female' : '';
+            
+            if (!normalizedGender) {
+                errors.push(`Row ${index + 2}: Gender must be Male or Female`);
+                errorCount++;
+                return;
+            }
+            
+            // Generate ID
+            const id = `${section.match(/\d+/)}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            // Add student
+            students[section].push({
+                id: id,
+                name: name.trim(),
+                gender: normalizedGender
+            });
+            
+            addedCount++;
+        } catch (err) {
+            errors.push(`Row ${index + 2}: ${err.message}`);
+            errorCount++;
+        }
+    });
+    
+    // Save and update
+    saveToStorage();
+    displayStudentLists();
+    
+    // Show result message
+    let message = `✓ Successfully added ${addedCount} student(s)`;
+    if (errorCount > 0) {
+        message += `\n⚠ ${errorCount} row(s) had errors`;
+    }
+    
+    showBulkMessage(message, errorCount === 0 ? 'success' : 'warning');
+    
+    if (errors.length > 0 && errors.length <= 5) {
+        console.log('Upload Errors:', errors);
+        showBulkMessage(message + '\n\nErrors:\n' + errors.slice(0, 5).join('\n'), 'warning');
+    }
+    
+    // Reset file input
+    document.getElementById('csvFileInput').value = '';
+    document.getElementById('fileName').textContent = '';
+}
+
+function showBulkMessage(text, type) {
+    const messageDiv = document.getElementById('uploadMessage');
+    messageDiv.innerHTML = `<div class="message-box ${type}">${text}</div>`;
 }
 
 // ===== SETTINGS FUNCTIONS =====
