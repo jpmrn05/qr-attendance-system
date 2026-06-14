@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Attendance System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>📱 QR Attendance System</h1>
+            </div>
+            <div class="nav-links">
+                <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+                <button class="nav-btn" data-page="scanner">Scanner</button>
+                <button class="nav-btn" data-page="qr-generator">QR Generator</button>
+                <button class="nav-btn" data-page="settings">Settings</button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <section id="dashboard" class="page active">
+                <div class="page-header">
+                    <h2>Attendance Dashboard</h2>
+                </div>
+
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label>Section:</label>
+                        <select id="dashboardSection">
+                            <option value="GRADE 4-BONIFACIO">GRADE 4 - BONIFACIO</option>
+                            <option value="GRADE 5-LUNA">GRADE 5 - LUNA</option>
+                            <option value="GRADE 6-RIZAL">GRADE 6 - RIZAL</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Subject:</label>
+                        <select id="dashboardSubject">
+                            <option value="">All Subjects</option>
+                            <option value="MAPEH">MAPEH</option>
+                            <option value="Math">Math</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Date:</label>
+                        <input type="date" id="dashboardDate">
+                    </div>
+                    <button class="btn-primary" onclick="applyDashboardFilters()">Filter</button>
+                    <button class="btn-secondary" onclick="exportToCSV()">📥 Export CSV</button>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Present</h3>
+                        <p class="summary-number" id="presentCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Late</h3>
+                        <p class="summary-number" id="lateCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Absent</h3>
+                        <p class="summary-number" id="absentCount">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Students</h3>
+                        <p class="summary-number" id="totalCount">0</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Section</th>
+                                <th>Subject</th>
+                                <th>Time In</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Scanner Page -->
+            <section id="scanner" class="page">
+                <div class="page-header">
+                    <h2>QR Code Scanner</h2>
+                </div>
+
+                <div class="scanner-setup">
+                    <div class="setup-group">
+                        <label>Select Section:</label>
+                        <select id="scannerSection">
+                            <option value="">-- Choose Section --</option>
+                            <option value="GRADE 4-BONIFACIO">GRADE 4 - BONIFACIO</option>
+                            <option value="GRADE 5-LUNA">GRADE 5 - LUNA</option>
+                            <option value="GRADE 6-RIZAL">GRADE 6 - RIZAL</option>
+                        </select>
+                    </div>
+                    <div class="setup-group">
+                        <label>Select Subject:</label>
+                        <select id="scannerSubject">
+                            <option value="">-- Choose Subject --</option>
+                            <option value="MAPEH">MAPEH</option>
+                            <option value="Math">Math</option>
+                        </select>
+                    </div>
+                    <button class="btn-primary" onclick="startScanner()">🎥 Start Scanner</button>
+                    <button class="btn-secondary" onclick="endSession()">⏹️ End Session</button>
+                </div>
+
+                <div id="qr-reader" style="display:none; max-width: 500px; margin: 20px auto;"></div>
+
+                <div id="scannerMessage" class="message-box" style="display:none;"></div>
+
+                <div class="scanner-info">
+                    <h3>Session Info</h3>
+                    <p>Section: <strong id="activeSection">-</strong></p>
+                    <p>Subject: <strong id="activeSubject">-</strong></p>
+                    <p>Session ID: <strong id="activeSessionId">-</strong></p>
+                    <p>Scans Recorded: <strong id="scanCount">0</strong></p>
+                </div>
+            </section>
+
+            <!-- QR Generator Page -->
+            <section id="qr-generator" class="page">
+                <div class="page-header">
+                    <h2>QR Code Generator</h2>
+                </div>
+
+                <div class="qr-generator-section">
+                    <div class="qr-config">
+                        <div class="config-group">
+                            <label>Section:</label>
+                            <select id="qrSection">
+                                <option value="GRADE 4-BONIFACIO">GRADE 4 - BONIFACIO</option>
+                                <option value="GRADE 5-LUNA">GRADE 5 - LUNA</option>
+                                <option value="GRADE 6-RIZAL">GRADE 6 - RIZAL</option>
+                            </select>
+                        </div>
+                        <div class="config-group">
+                            <label>Subject:</label>
+                            <select id="qrSubject">
+                                <option value="MAPEH">MAPEH</option>
+                                <option value="Math">Math</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="generateQRCode()">🔲 Generate QR</button>
+                    </div>
+                    <div id="qrCodeContainer" style="text-align: center; margin-top: 30px;">
+                        <div id="qrcode" style="display: inline-block;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Page -->
+            <section id="settings" class="page">
+                <div class="page-header">
+                    <h2>Settings & Configuration</h2>
+                </div>
+
+                <div class="settings-container">
+                    <div class="settings-group">
+                        <h3>Time Configuration</h3>
+                        <div class="setting-item">
+                            <label>Class Start Time:</label>
+                            <input type="time" id="classStartTime" value="07:00">
+                        </div>
+                        <div class="setting-item">
+                            <label>Late Cutoff Time:</label>
+                            <input type="time" id="lateCutoffTime" value="07:10">
+                        </div>
+                        <div class="setting-item">
+                            <label>Final Cutoff Time:</label>
+                            <input type="time" id="finalCutoffTime" value="07:30">
+                        </div>
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Data Management</h3>
+                        <button class="btn-secondary" onclick="clearAllData()">🗑️ Clear All Data</button>
+                        <button class="btn-secondary" onclick="resetDailyData()">🔄 Reset Daily Data</button>
+                        <button class="btn-secondary" onclick="downloadBackup()">💾 Download Backup</button>
+                        <button class="btn-secondary" onclick="document.getElementById('uploadBackup').click()">📂 Upload Backup</button>
+                        <input type="file" id="uploadBackup" style="display:none;" accept=".json" onchange="restoreBackup(event)">
+                    </div>
+
+                    <div class="settings-group">
+                        <h3>Student Database</h3>
+                        <div class="student-list-section">
+                            <h4>Add/Edit Students</h4>
+                            <div class="add-student-form">
+                                <select id="studentSection">
+                                    <option value="GRADE 4-BONIFACIO">GRADE 4 - BONIFACIO</option>
+                                    <option value="GRADE 5-LUNA">GRADE 5 - LUNA</option>
+                                    <option value="GRADE 6-RIZAL">GRADE 6 - RIZAL</option>
+                                </select>
+                                <input type="text" id="studentName" placeholder="Full Name">
+                                <select id="studentGender">
+                                    <option value="">-- Gender --</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                </select>
+                                <button class="btn-primary" onclick="addStudent()">➕ Add Student</button>
+                            </div>
+                            <div id="studentListContainer" style="margin-top: 20px;">
+                                <!-- Student lists will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
