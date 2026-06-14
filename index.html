@@ -197,34 +197,18 @@
                     <div class="settings-group">
                         <h3>Student Database</h3>
                         <div class="student-list-section">
-                            <h4>Add/Edit Students</h4>
-                            <div class="add-student-form">
-                                <select id="studentSection">
-                                    <option value="GRADE 4-BONIFACIO">GRADE 4 - BONIFACIO</option>
-                                    <option value="GRADE 5-LUNA">GRADE 5 - LUNA</option>
-                                    <option value="GRADE 6-RIZAL">GRADE 6 - RIZAL</option>
-                                </select>
-                                <input type="text" id="studentName" placeholder="Full Name">
-                                <select id="studentGender">
-                                    <option value="">-- Gender --</option>
-                                    <option value="MALE">Male</option>
-                                    <option value="FEMALE">Female</option>
-                                </select>
-                                <button class="btn-primary" onclick="addStudent()">➕ Add Student</button>
-                            </div>
-                            <div id="studentListContainer" style="margin-top: 20px;">
-                                <!-- Student lists will be populated here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                            <!-- Bulk Upload Section -->
+                            <div class="bulk-upload-section">
+                                <h4>📤 Bulk Import Students (CSV/Excel)</h4>
+                                <p class="upload-hint">Upload a CSV or Excel file with columns: Name, Gender, Section</p>
+                                <div class="bulk-upload-form">
+                                    <button class="btn-secondary" onclick="document.getElementById('csvFileInput').click()">📁 Choose File</button>
+                                    <input type="file" id="csvFileInput" style="display:none;" accept=".csv,.xlsx,.xls" onchange="handleBulkUpload(event)">
+                                    <span id="fileName" style="margin-left: 10px; color: #666;"></span>
+                                </div>
+                                <div id="uploadMessage" style="margin-top: 15px;"></div>
+                                <div class="csv-template">\n                                    <details>\n                                        <summary style=\"cursor: pointer; color: #2196F3; font-weight: 600;\">📋 View CSV Template</summary>\n                                        <pre style=\"background: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto;\">Name,Gender,Section\nJohn Doe,Male,GRADE 4-BONIFACIO\nJane Smith,Female,GRADE 4-BONIFACIO\nMaria Santos,Female,GRADE 5-LUNA\nPedro Reyes,Male,GRADE 5-LUNA</pre>\n                                    </details>\n                                </div>\n                            </div>\n\n                            <!-- Individual Add Section -->\n                            <div class=\"individual-add-section\" style=\"margin-top: 30px; padding-top: 30px; border-top: 2px solid #ddd;\">\n                                <h4>➕ Add Individual Student</h4>\n                                <div class=\"add-student-form\">\n                                    <select id=\"studentSection\">\n                                        <option value=\"GRADE 4-BONIFACIO\">GRADE 4 - BONIFACIO</option>\n                                        <option value=\"GRADE 5-LUNA\">GRADE 5 - LUNA</option>\n                                        <option value=\"GRADE 6-RIZAL\">GRADE 6 - RIZAL</option>\n                                    </select>\n                                    <input type="text" id="studentName" placeholder="Full Name">\n                                    <select id="studentGender">\n                                        <option value="">-- Gender --</option>\n                                        <option value="Male">Male</option>\n                                        <option value="Female">Female</option>\n                                    </select>\n                                    <button class="btn-primary" onclick="addStudent()">➕ Add Student</button>\n                                </div>\n                            </div>\n\n                            <div id="studentListContainer" style="margin-top: 30px;\">\n                                <!-- Student lists will be populated here -->\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </section>
         </main>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script>
-    <script src="app.js"></script>
-</body>
-</html>
+    <!-- Scripts -->\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js\"></script>\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js\"></script>\n    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js\"></script>\n    <script src=\"app.js\"></script>\n</body>\n</html>
