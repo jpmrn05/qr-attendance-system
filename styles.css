@@ -447,100 +447,6 @@ table tbody tr td:last-child {
     max-width: 200px;
 }
 
-/* Bulk Upload Section */
-.bulk-upload-section {
-    background: linear-gradient(135deg, rgba(33, 150, 243, 0.05), rgba(76, 175, 80, 0.05));
-    padding: 20px;
-    border-radius: 8px;
-    border: 2px solid var(--secondary-color);
-    margin-bottom: 25px;
-}
-
-.bulk-upload-section h4 {
-    color: var(--secondary-color);
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.bulk-upload-section p.upload-hint {
-    color: #666;
-    font-size: 13px;
-    margin-bottom: 15px;
-    font-style: italic;
-}
-
-.bulk-upload-form {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-}
-
-.bulk-upload-form #fileName {
-    color: #555;
-    font-size: 13px;
-    padding: 8px 12px;
-    background: #f0f0f0;
-    border-radius: 5px;
-}
-
-.csv-template {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    margin-top: 15px;
-}
-
-.csv-template details {
-    padding: 15px;
-}
-
-.csv-template summary {
-    cursor: pointer;
-    color: var(--secondary-color);
-    font-weight: 600;
-    user-select: none;
-}
-
-.csv-template summary:hover {
-    color: #0b7dda;
-}
-
-.csv-template pre {
-    background: #f5f5f5;
-    padding: 12px;
-    border-radius: 5px;
-    overflow-x: auto;
-    font-size: 12px;
-    line-height: 1.5;
-    margin-top: 10px;
-    border: 1px solid var(--border-color);
-}
-
-#uploadMessage {
-    margin-top: 15px;
-}
-
-#uploadMessage .message-box {
-    margin: 0;
-    font-size: 13px;
-}
-
-/* Individual Add Section */
-.individual-add-section {
-    background: #fafafa;
-    padding: 20px;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary-color);
-}
-
-.individual-add-section h4 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    font-size: 16px;
-}
-
 .add-student-form {
     display: flex;
     gap: 10px;
@@ -556,10 +462,6 @@ table tbody tr td:last-child {
     font-size: 14px;
     flex: 1;
     min-width: 150px;
-}
-
-.student-list-section {
-    width: 100%;
 }
 
 .student-list {
@@ -645,14 +547,6 @@ table tbody tr td:last-child {
     .qr-config {
         flex-direction: column;
     }
-
-    .bulk-upload-form {
-        flex-direction: column;
-    }
-
-    .bulk-upload-form .btn-secondary {
-        width: 100%;
-    }
 }
 
 @media (max-width: 480px) {
@@ -679,14 +573,6 @@ table tbody tr td:last-child {
 
     #qr-reader {
         max-width: 100%;
-    }
-
-    .bulk-upload-section {
-        padding: 15px;
-    }
-
-    .bulk-upload-section h4 {
-        font-size: 14px;
     }
 }
 
